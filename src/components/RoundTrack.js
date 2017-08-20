@@ -10,7 +10,8 @@ const roundIndicator = currentRound => x => {
     lineHeight: '24px',
     borderRadius: '12px',
     margin: '10px auto',
-    border: '1px solid transparent'
+    border: '1px solid',
+    borderColor: 'transparent'
   };
 
   if (x === currentRound) {
