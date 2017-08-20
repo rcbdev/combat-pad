@@ -9,11 +9,12 @@ const roundIndicator = currentRound => x => {
     textAlign: 'center',
     lineHeight: '24px',
     borderRadius: '12px',
-    margin: '10px auto'
+    margin: '10px auto',
+    border: '1px solid transparent'
   };
 
   if (x === currentRound) {
-    styles.border = '1px solid black';
+    styles.borderColor = 'black';
   }
 
   return (<p style={styles} key={round}>{round}</p>);
