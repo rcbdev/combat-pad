@@ -29,6 +29,8 @@ const subtractOneFromTurn = (state) => {
   return {currentRound: round, currentTurn: turn};
 };
 
+const isEditable = (element) => element.nodeName === 'INPUT' || element.nodeName === 'SELECT ' || element.getAttribute('contenteditable');
+
 const defaultState = {
   players: [],
   currentTurn: 0,
@@ -56,7 +58,7 @@ class Pad extends Component {
   }
 
   handleKeyDown = (e) => {
-    if (!e.target.getAttribute('contenteditable')) {
+    if (!isEditable(e.target)) {
       const keyCode = e.keyCode.toString();
       if (this.keyHandlers.hasOwnProperty(keyCode)) {
         this.keyHandlers[keyCode]();
