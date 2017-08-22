@@ -3,12 +3,13 @@ import cuid from 'cuid';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import TextField from 'material-ui/TextField';
+import Toggle from 'material-ui/Toggle';
 
 const defaultState = {
   name: '',
   initiative: '',
   dex: '',
-  pc: ''
+  pc: true
 };
 
 class PlayerAdder extends Component {
@@ -22,7 +23,7 @@ class PlayerAdder extends Component {
       name: this.state.name,
       initiative: this.state.initiative * 1,
       dex: this.state.dex * 1,
-      pc: this.state.pc === 'y',
+      pc: this.state.pc,
       id: cuid()
     };
 
@@ -45,10 +46,10 @@ class PlayerAdder extends Component {
         <Dialog title="Add Player" actions={actions}
                 modal={false} open={this.props.open}
                 onRequestClose={this.handleClose}>
-          <TextField hintText="Player Name" value={this.state.name} onChange={(e, x) => this.setState({name: x})} /><br/>
-          <TextField hintText="Initiative" value={this.state.initiative} onChange={(e, x) => this.setState({initiative: x})} /><br/>
-          <TextField hintText="Dex" value={this.state.dex} onChange={(e, x) => this.setState({dex: x})} /><br/>
-          <TextField hintText="PC y/n" value={this.state.pc} onChange={(e, x) => this.setState({pc: x})} />
+          <TextField floatingLabelText="Player Name" value={this.state.name} onChange={(e, x) => this.setState({name: x})} /><br/>
+          <TextField floatingLabelText="Initiative" value={this.state.initiative} onChange={(e, x) => this.setState({initiative: x})} /><br/>
+          <TextField floatingLabelText="Dex" value={this.state.dex} onChange={(e, x) => this.setState({dex: x})} /><br/><br/>
+          <Toggle label={this.state.pc ? "PC" : "NPC"} toggled={this.state.pc} labelPosition="right" onToggle={(e, x) => this.setState({pc: x})} />
         </Dialog>
     );
   }
