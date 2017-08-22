@@ -6,16 +6,16 @@ class Notes extends Component {
     localStorage.setItem('pad-notes', this.notesHolder.innerHTML);
   }
 
-  componentDidMount() {
+  componentDidMount = () => {
     window.addEventListener('beforeunload', this.handleBeforeUnload);
     this.notesHolder.innerHTML = localStorage.getItem('pad-notes') || '';
   }
   
-  componentWillUnMount() {
+  componentWillUnMount = () => {
     window.addEventListener('beforeunload', this.handleBeforeUnload);
   }
 
-  render(){
+  render() {
     return (
       <div style={{width: '700px', float: 'left'}}>
         <Subheader>Notes</Subheader>

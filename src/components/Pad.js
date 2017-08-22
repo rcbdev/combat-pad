@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import TurnOrder from './TurnOrder';
 import Notes from './Notes';
 import RoundTrack from './RoundTrack';
-import cuid from 'cuid';
+import PlayerAdder from './PlayerAdder';
 
 const addOneToTurn = (state) => {
   let turn = state.currentTurn + 1;
@@ -13,11 +13,12 @@ const addOneToTurn = (state) => {
   }
   return {currentRound: round, currentTurn: turn};
 };
+
 const subtractOneFromTurn = (state) => {
   let turn = state.currentTurn - 1;
   let round = state.currentRound;
   if (turn < 0) {
-    if (round > 0){
+    if (round > 0) {
       turn = state.players.length - 1;
       round--;
     }
@@ -27,97 +28,59 @@ const subtractOneFromTurn = (state) => {
   }
   return {currentRound: round, currentTurn: turn};
 };
-const collectPlayerDetails = () => {
-  const playerName = window.prompt("Player Name?");
-  if (!playerName) {
-    return;
-  }
-  const initiative = window.prompt("Initiative?");
-  if (!initiative) {
-    return;
-  }
-  const dex = window.prompt("Dex?");
-  if (!dex) {
-    return;
-  }
-  const pc = window.prompt("PC (y/n)?");
 
-  return {
-    name: playerName,
-    initiative: initiative * 1,
-    dex: dex * 1,
-    pc: pc === 'y',
-    id: cuid()
-  };
-};
 const defaultState = {
   players: [],
   currentTurn: 0,
-  currentRound: 0
+  currentRound: 0,
+  open: false
 };
+
 const getState = () => {
-  const state = localStorage.getItem('pad-state');
-  return state ? JSON.parse(state) : defaultState;
+  const state = localStorage.getItem('pad-state') || '{}';
+  return {...defaultState, ...JSON.parse(state)};
 }
 
 class Pad extends Component {
-  constructor(props){
+  constructor(props) {
     super(props);
     this.state = getState();
   }
 
+  keyHandlers = {
+    "38": () => this.setState(subtractOneFromTurn), // Up
+    "40": () => this.setState(addOneToTurn), // Down
+    "32": () => this.setState(addOneToTurn), // Space
+    "78": () => this.addPlayer(), // n
+    "88": () => this.removePlayer(), // x
+  }
+
   handleKeyDown = (e) => {
-    if(!e.target.getAttribute('contenteditable')){
-      switch (e.keyCode){
-        case 37: // Left
-          break;
-        case 38: // Up
-          this.setState(subtractOneFromTurn);
-          break;
-        case 39: // Right
-          break;
-        case 40: // Down
-          this.setState(addOneToTurn);
-          break;
-        case 32: // Space
-          this.setState(addOneToTurn);
-          break;
-        case 78: // n
-          this.addPlayer();
-          break;
-        case 88: // x
-          this.removePlayer();
-          break;
-        default:
-          break;
+    if (!e.target.getAttribute('contenteditable')) {
+      const keyCode = e.keyCode.toString();
+      if (this.keyHandlers.hasOwnProperty(keyCode)) {
+        this.keyHandlers[keyCode]();
       }
     }
   }
 
-  handleBeforeUnload = () => {
-    localStorage.setItem('pad-state', JSON.stringify(this.state));
-  }
+  handleBeforeUnload = () => localStorage.setItem('pad-state', JSON.stringify(this.state));
 
-  componentDidMount() {
+  removePlayer = () => this.setState(prev => ({players: prev.players.filter((p, i) => i !== prev.currentTurn)}));
+
+  addPlayer = () => this.setState({open: true});
+
+  handlePlayerAdd = (player) => this.setState(prev => ({open: false, players: [...prev.players, player]}));
+
+  handleClose = () => this.setState({open: false});
+
+  componentDidMount = () => {
     window.addEventListener('keydown', this.handleKeyDown);
     window.addEventListener('beforeunload', this.handleBeforeUnload);
   }
   
-  componentWillUnMount() {
+  componentWillUnMount = () => {
     window.addEventListener('beforeunload', this.handleBeforeUnload);
-  }
-
-  removePlayer = () => {
-    this.setState(prev => ({players: prev.players.filter((p, i) => i !== prev.currentTurn)}));
-  }
-
-  addPlayer = () => {
-    const player = collectPlayerDetails();
-    if (!player) {
-      return;
-    }
-    
-    this.setState(prev => ({players: [...prev.players, player]}));
   }
 
   render() {
@@ -127,6 +90,7 @@ class Pad extends Component {
         <TurnOrder players={players} currentTurn={currentTurn} onAddPlayer={this.addPlayer} />
         <Notes/>
         <RoundTrack currentRound={currentRound} />
+        <PlayerAdder open={this.state.open} onClose={this.handleClose} onPlayerAdd={this.handlePlayerAdd} />
       </div>
     );
   }
