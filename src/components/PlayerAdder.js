@@ -30,16 +30,21 @@ class PlayerAdder extends Component {
     this.setState(defaultState);
   }
 
+  handleClose = () => {
+    this.props.onClose();
+    this.setState(defaultState);
+  }
+
   render() {
     const actions = [
-      <FlatButton label="Cancel" primary={true} onClick={this.props.onClose} />,
+      <FlatButton label="Cancel" primary={true} onClick={this.handleClose} />,
       <FlatButton label="Submit" primary={true} onClick={this.handlePlayerAdd} />
     ];
 
     return (
         <Dialog title="Add Player" actions={actions}
                 modal={false} open={this.props.open}
-                onRequestClose={this.props.onClose}>
+                onRequestClose={this.handleClose}>
           <TextField hintText="Player Name" value={this.state.name} onChange={(e, x) => this.setState({name: x})} /><br/>
           <TextField hintText="Initiative" value={this.state.initiative} onChange={(e, x) => this.setState({initiative: x})} /><br/>
           <TextField hintText="Dex" value={this.state.dex} onChange={(e, x) => this.setState({dex: x})} /><br/>
